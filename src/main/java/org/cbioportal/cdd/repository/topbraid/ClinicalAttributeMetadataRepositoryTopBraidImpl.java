@@ -84,10 +84,10 @@ public class ClinicalAttributeMetadataRepositoryTopBraidImpl extends TopBraidRep
         "    } " +
         "}";
     @Cacheable(value = "clinicalAttributeMetadataEHCache", key = "#root.target.GET_CLINICAL_ATTRIBUTES_SPARQL_QUERY_STRING")
-    public List<ClinicalAttributeMetadata> getClinicalAttributeMetadata() {
+    public ArrayList<ClinicalAttributeMetadata> getClinicalAttributeMetadata() {
         try {
             logger.info("CACHING SPARQL QUERY getClinicalAttributeMetadata");
-            List<ClinicalAttributeMetadata> list = super.query(GET_CLINICAL_ATTRIBUTES_SPARQL_QUERY_STRING, new ParameterizedTypeReference<List<ClinicalAttributeMetadata>>(){});
+            ArrayList<ClinicalAttributeMetadata> list = new ArrayList<ClinicalAttributeMetadata>(super.query(GET_CLINICAL_ATTRIBUTES_SPARQL_QUERY_STRING, new ParameterizedTypeReference<List<ClinicalAttributeMetadata>>(){}));
             jCacheCacheManager.getCache("clinicalAttributeMetadataEHCache").put(GET_OVERRIDES_SPARQL_QUERY_STRING, list);
 
             return list;
