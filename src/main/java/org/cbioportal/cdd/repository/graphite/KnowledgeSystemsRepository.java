@@ -51,6 +51,7 @@ public class KnowledgeSystemsRepository extends GraphiteRepository<ClinicalAttri
             "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
             "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+            "PREFIX g:<http://schema.synaptica.com/oasis#> " +
             "SELECT DISTINCT ?study_id ?column_header (SAMPLE(?PriorityValue) AS ?priority) " +
                 "(SAMPLE(?AttributeTypeValue) AS ?attribute_type) " +
                 "(SAMPLE(?DatatypeValue) AS ?datatype) " +
@@ -69,11 +70,17 @@ public class KnowledgeSystemsRepository extends GraphiteRepository<ClinicalAttri
                 "OPTIONAL { ?node cdd:datatypevalue ?DatatypeValue }. " +
                 "OPTIONAL { ?node cdd:descriptionvalue ?DescriptionValue }. " +
                 "OPTIONAL { ?node cdd:displaynamevalue ?DisplayNameValue }. " +
+                "OPTIONAL{?node g:conceptStatus ?concept_status_node.} " +
+                "OPTIONAL{?parent g:conceptStatus ?concept_status_parent.} " +
+                "OPTIONAL{?grandparent g:conceptStatus ?concept_status_grandparent.} " +
             "FILTER (STR(?type) IN ('ClinicalAttributeOverridePriorityValue', " +
                "'ClinicalAttributeOverrideAttributeTypeValue', " +
                "'ClinicalAttributeOverrideDatatypeValue', " +
                "'ClinicalAttributeOverrideDescriptionValue', " +
                "'ClinicalAttributeOverrideDisplayNameValue')) " +
+            "FILTER (?concept_status_node = 'Published') " +
+            "FILTER (?concept_status_parent = 'Published') " +
+            "FILTER (?concept_status_grandparent = 'Published') " +
             "} " + 
             "GROUP BY ?study_id ?column_header " +
             "ORDER BY ?study_id ?column_header ";
@@ -83,14 +90,17 @@ public class KnowledgeSystemsRepository extends GraphiteRepository<ClinicalAttri
         return "PREFIX cdd: <" + graphiteCddNamespacePrefix + "> " +
             "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
             "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+            "PREFIX g:<http://schema.synaptica.com/oasis#> " +
             "SELECT ?column_header ?display_name ?attribute_type ?datatype ?description ?priority WHERE { " +
-	            "?subject skos:inScheme <" + graphiteCddGraphId + "> . " +
-	            "?subject rdfs:label ?column_header . " +
-	            "?subject cdd:attributetype ?attribute_type . " +
-	            "?subject cdd:datatype ?datatype . " +
-	            "?subject cdd:description ?description . " +
-	            "?subject cdd:displayname ?display_name . " +
-	            "?subject cdd:priority ?priority . " +
+                "?subject skos:inScheme <" + graphiteCddGraphId + "> . " +
+                "?subject rdfs:label ?column_header . " +
+                "?subject cdd:attributetype ?attribute_type . " +
+                "?subject cdd:datatype ?datatype . " +
+                "?subject cdd:description ?description . " +
+                "?subject cdd:displayname ?display_name . " +
+                "?subject cdd:priority ?priority . " +
+                "OPTIONAL{?subject g:conceptStatus ?concept_status.} " +
+                "FILTER (?concept_status = 'Published')" +
             "}";
     }
 
